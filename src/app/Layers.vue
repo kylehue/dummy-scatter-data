@@ -36,7 +36,10 @@
                   :list="sortedLayers"
                   item-key="id"
                   animation="200"
-                  @change="(e: any) => setLayerOrder(e.moved.newIndex, e.moved.element.id)"
+                  @change="
+                     (e: any) =>
+                        setLayerOrder(e.moved.newIndex, e.moved.element.id)
+                  "
                >
                   <template #item="{ element: layer }: { element: Layer }">
                      <Item
@@ -270,7 +273,7 @@ function toggleLayerHidden(id: string) {
    emit("update:layer", layer);
 }
 
-function setLayerOrder(id: string, newIndex: number) {
+function setLayerOrder(newIndex: number, id: string) {
    layers.setOrder(newIndex, id);
    emit("update:layer", layers.get(id));
 }
