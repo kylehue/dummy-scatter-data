@@ -71,16 +71,19 @@ const settings = useSettingsStore();
 const layers = useLayersStore();
 
 function getLayerData() {
-   const layerData: Record<string, any[]> = {};
+   const all: Record<string, any>[] = [];
    for (const layer of layers.getAll()) {
-      layerData[`${layer.name}_x`] = [];
-      layerData[`${layer.name}_y`] = [];
       for (const point of layer.data) {
-         layerData[`${layer.name}_x`].push(point.x);
-         layerData[`${layer.name}_y`].push(point.y);
+         const data = {
+            x: point.x,
+            y: point.y,
+            layer: layer.name,
+            hidden: layer.isHidden,
+         };
+         all.push(data);
       }
    }
-   return layerData;
+   return all;
 }
 
 function exportAsCsv() {

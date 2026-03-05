@@ -1,6 +1,8 @@
-export function exportAsCsv(data: Record<string, any[]>, filename: string) {
-   const headers = Object.keys(data);
-   const columns = headers.map((header) => data[header] ?? []);
+export function exportAsCsv(data: Record<string, any>[], filename: string) {
+   const headers = Object.keys(data[0] || {});
+   const columns = headers.map((header) =>
+      data.map((row) => row[header] ?? []),
+   );
    const rowCount = columns.reduce(
       (max, column) => Math.max(max, column.length),
       0,
@@ -59,7 +61,8 @@ export function exportAsPng(canvas: HTMLCanvasElement, filename: string) {
 }
 
 export function exportAsSvg(svg: string, filename: string) {
-   const svgContent = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+   const svgContent =
+      "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
 
    const link = document.createElement("a");
    link.setAttribute("href", svgContent);
