@@ -286,6 +286,7 @@ export const useLayersStore = defineStore("layers", () => {
    function clear() {
       layers.value.clear();
       activeLayerId.value = null;
+      updateUrlState();
       clearState();
    }
 
