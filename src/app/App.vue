@@ -4,11 +4,15 @@
          <Menu />
          <div class="flex w-full flex-wrap justify-center gap-3">
             <Layers
-               class="order-2 w-fit xl:order-1 h-[500px] xl:flex-none"
+               class="order-2 xl:order-1 flex-1 min-w-75"
+               :style="{ height: CANVAS_SIZE + 'px' }"
                @update:layer="onUpdateLayer()"
             />
-            <div class="order-1 xl:order-2">
-               <div class="flex justify-center h-[500px] xl:items-center">
+            <div class="order-1 xl:order-2 flex-none">
+               <div
+                  class="flex justify-center xl:items-center"
+                  :style="{ height: CANVAS_SIZE + 'px' }"
+               >
                   <div
                      ref="canvasWrapper"
                      class="relative flex-none overflow-hidden rounded-xl bg-white"
@@ -34,7 +38,8 @@
             </div>
 
             <LayerConfig
-               class="order-3 w-fit h-[500px] xl:flex-none"
+               class="order-3 flex-1 min-w-75"
+               :style="{ height: CANVAS_SIZE + 'px' }"
                @update:data-options="onUpdateLayerData()"
             />
          </div>
