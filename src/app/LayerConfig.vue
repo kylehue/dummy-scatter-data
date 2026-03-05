@@ -29,7 +29,7 @@
                         v-model="state.size"
                         :default-value="layer.dataOptions.size"
                         :min="0"
-                        :step="100"
+                        :step="1000"
                      >
                         <NumberFieldContent>
                            <NumberFieldDecrement />
