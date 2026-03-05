@@ -17,13 +17,13 @@
       <MenubarMenu>
          <MenubarTrigger>Edit</MenubarTrigger>
          <MenubarContent>
-            <MenubarItem @click="layers.moveState(-1)">
+            <MenubarItem @click="onUndo()">
                Undo <MenubarShortcut>⌘Z</MenubarShortcut>
             </MenubarItem>
-            <MenubarItem @click="layers.moveState(1)">
+            <MenubarItem @click="onRedo()">
                Redo <MenubarShortcut>⇧⌘Z</MenubarShortcut>
             </MenubarItem>
-            <MenubarItem @click="resetAll()" variant="destructive">
+            <MenubarItem @click="onReset()" variant="destructive">
                Reset all
             </MenubarItem>
          </MenubarContent>
@@ -62,6 +62,7 @@ import {
 } from "@/components/ui/menubar";
 import { useLayersStore } from "@/store/layers";
 import { useSettingsStore } from "@/store/settings";
+import { useFramesStore } from "@/store/frames";
 import {
    exportAsCsv as _exportAsCsv,
    exportAsJson as _exportAsJson,
@@ -72,9 +73,24 @@ import { map } from "@/lib/math";
 
 const settings = useSettingsStore();
 const layers = useLayersStore();
+const frames = useFramesStore();
 
-function resetAll() {
+function onReset() {
    layers.clear();
+   frames.incrementBoundaryFrames();
+   frames.incrementDataFrames();
+}
+
+function onUndo() {
+   layers.moveState(-1);
+   frames.incrementBoundaryFrames();
+   frames.incrementDataFrames();
+}
+
+function onRedo() {
+   layers.moveState(1);
+   frames.incrementBoundaryFrames();
+   frames.incrementDataFrames();
 }
 
 function getLayerData() {

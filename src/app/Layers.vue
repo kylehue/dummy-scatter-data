@@ -174,6 +174,7 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
 import { useLayersStore } from "@/store/layers";
+import { useFramesStore } from "@/store/frames";
 import {
    EllipsisVerticalIcon,
    EyeIcon,
@@ -231,11 +232,8 @@ import {
 const PREVIEW_SIZE = 42;
 const PREVIEW_PADDING = 2;
 
-const emit = defineEmits<{
-   (e: "update:layer", layer: Layer): void;
-}>();
-
 const layers = useLayersStore();
+const frames = useFramesStore();
 const sortedLayers = computed(() => {
    const all = layers.getAll();
    return all.slice().sort((a, b) => a.order - b.order);
@@ -251,30 +249,34 @@ function addLayer() {
 }
 
 function removeLayer(id: string) {
-   const layer = layers.get(id);
    layers.remove(id);
-   emit("update:layer", layer);
+   frames.incrementBoundaryFrames();
+   frames.incrementDataFrames();
 }
 
 function duplicateLayer(id: string) {
-   const newLayer = layers.duplicate(id);
-   emit("update:layer", newLayer);
+   layers.duplicate(id);
+   frames.incrementBoundaryFrames();
+   frames.incrementDataFrames();
 }
 
 function toggleLayerLock(id: string) {
    const layer = layers.get(id);
    layers.setLocked(!layer.isLocked, layer.id);
-   emit("update:layer", layer);
+   frames.incrementBoundaryFrames();
+   frames.incrementDataFrames();
 }
 
 function toggleLayerHidden(id: string) {
    const layer = layers.get(id);
    layers.setHidden(!layer.isHidden, layer.id);
-   emit("update:layer", layer);
+   frames.incrementBoundaryFrames();
+   frames.incrementDataFrames();
 }
 
 function setLayerOrder(newIndex: number, id: string) {
    layers.setOrder(newIndex, id);
-   emit("update:layer", layers.get(id));
+   frames.incrementBoundaryFrames();
+   frames.incrementDataFrames();
 }
 </script>

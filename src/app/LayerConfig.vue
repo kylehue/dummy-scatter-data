@@ -156,6 +156,7 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from "vue";
 import { useLayersStore } from "@/store/layers";
+import { useFramesStore } from "@/store/frames";
 import { SettingsIcon } from "lucide-vue-next";
 import {
    Card,
@@ -192,13 +193,9 @@ import {
    EmptyMedia,
    EmptyTitle,
 } from "@/components/ui/empty";
-import { Layer } from "@/lib/types";
-
-const emit = defineEmits<{
-   (e: "update:dataOptions", layer: Layer): void;
-}>();
 
 const layers = useLayersStore();
+const frames = useFramesStore();
 
 const layer = computed(() => layers.getSafe());
 const isLayerModified = computed(() => {
@@ -233,7 +230,8 @@ function save() {
       opacity: state.opacity[0],
       color: state.color,
    });
-   emit("update:dataOptions", layer.value);
+   layers.generateData();
+   frames.incrementDataFrames();
 }
 
 watch(

@@ -6,7 +6,6 @@
             <Layers
                class="order-2 xl:order-1 flex-1 min-w-75"
                :style="{ height: CANVAS_SIZE + 'px' }"
-               @update:layer="onUpdateLayer()"
             />
             <div class="order-1 xl:order-2 flex-none">
                <div
@@ -40,7 +39,6 @@
             <LayerConfig
                class="order-3 flex-1 min-w-75"
                :style="{ height: CANVAS_SIZE + 'px' }"
-               @update:data-options="onUpdateLayerData()"
             />
          </div>
       </div>
@@ -56,6 +54,7 @@ import Layers from "./Layers.vue";
 import LayerConfig from "./LayerConfig.vue";
 import Menu from "./Menu.vue";
 import { useSettingsStore } from "@/store/settings";
+import { useFramesStore } from "@/store/frames";
 import { useShortcuts } from "@/composables/use-shortcuts";
 
 const CANVAS_SIZE = 500;
@@ -70,6 +69,7 @@ const mouse = useMouse({
 const shortcuts = useShortcuts();
 const layers = useLayersStore();
 const settings = useSettingsStore();
+const frames = useFramesStore();
 const sortedLayers = computed(() => {
    const all = layers.getAll();
    return all.slice().sort((a, b) => a.order - b.order);
@@ -138,59 +138,41 @@ function redrawBoundary() {
 }
 
 function onBeforeDraw() {
-   console.log("before draw");
    layers.pauseAutosaveState();
    layers.setBoundaryPoints([]); // overwrite
 }
 
 function onAfterDraw() {
-   console.log("after draw");
    const points = layers.getBoundaryPoints();
    if (points.length > 0) {
       layers.addBoundaryPoint(points[0]); // close
       layers.simplifyBoundaryPoints();
       layers.generateData();
    }
-   redrawBoundary();
-   redrawData();
+   frames.incrementBoundaryFrames();
+   frames.incrementDataFrames();
    layers.saveState();
 }
 
-function onUpdateLayerData() {
-   console.log("data options changed");
-   layers.generateData();
-   redrawData();
-   redrawBoundary();
-}
-
-function onUpdateLayer() {
-   console.log("layer changed");
-   redrawData();
-   redrawBoundary();
-}
-
 function onDraw() {
-   console.log("during draw");
    const clamped = {
       x: clamp(mouse.x, 0, CANVAS_SIZE),
       y: clamp(mouse.y, 0, CANVAS_SIZE),
    };
    layers.addBoundaryPoint(clamped);
-   redrawBoundary();
+   frames.incrementBoundaryFrames();
 }
 
 function onUndo() {
-   console.log("undo");
    layers.moveState(-1);
-   redrawBoundary();
-   redrawData();
+   frames.incrementBoundaryFrames();
+   frames.incrementDataFrames();
 }
 
 function onRedo() {
-   console.log("redo");
    layers.moveState(1);
-   redrawBoundary();
-   redrawData();
+   frames.incrementBoundaryFrames();
+   frames.incrementDataFrames();
 }
 
 shortcuts.register("ctrl+z", (e) => {
@@ -235,16 +217,19 @@ watch(
 watch(
    () => [settings.isBoundaryVisible, settings.isDataPointsVisible],
    () => {
-      redrawBoundary();
-      redrawData();
+      frames.incrementBoundaryFrames();
+      frames.incrementDataFrames();
    },
 );
+watch(() => frames.boundaryFramesCounter, redrawBoundary, { immediate: true });
+watch(() => frames.dataFramesCounter, redrawData, { immediate: true });
 
 onMounted(() => {
    (window as any).layers = layers; // for debugging
    layers.loadUrlState();
-   redrawData();
-   redrawBoundary();
+   layers.saveState(); // ensure initial state is saved for undo/redo
+   frames.incrementBoundaryFrames();
+   frames.incrementDataFrames();
 });
 </script>
 
