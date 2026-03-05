@@ -19,7 +19,7 @@
             </EmptyDescription>
          </Empty>
          <ScrollArea v-else ref="scrollArea" class="h-full">
-            <ItemGroup class="w-100">
+            <ItemGroup>
                <Item size="sm">
                   <ItemContent class="flex flex-col items-start gap-0">
                      <ItemTitle>Data Size</ItemTitle>
