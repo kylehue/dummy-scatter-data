@@ -23,6 +23,9 @@
             <MenubarItem @click="layers.moveState(1)">
                Redo <MenubarShortcut>⇧⌘Z</MenubarShortcut>
             </MenubarItem>
+            <MenubarItem @click="resetAll()" variant="destructive">
+               Reset all
+            </MenubarItem>
          </MenubarContent>
       </MenubarMenu>
       <MenubarMenu>
@@ -69,6 +72,10 @@ import { map } from "@/lib/math";
 
 const settings = useSettingsStore();
 const layers = useLayersStore();
+
+function resetAll() {
+   layers.clear();
+}
 
 function getLayerData() {
    const all: Record<string, any>[] = [];

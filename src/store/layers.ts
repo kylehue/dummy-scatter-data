@@ -286,6 +286,7 @@ export const useLayersStore = defineStore("layers", () => {
    function clear() {
       layers.value.clear();
       activeLayerId.value = null;
+      clearState();
    }
 
    function toJson() {
@@ -311,9 +312,16 @@ export const useLayersStore = defineStore("layers", () => {
       }
    }
 
+   // State management
    const STATE_LIMIT = 100;
    const stateStack = ref<any[]>([]);
    let currentStateIndex = -1;
+
+   function clearState() {
+      stateStack.value = [];
+      currentStateIndex = -1;
+   }
+
    function saveState() {
       if (isAutosaveStatePaused) {
          isAutosaveStatePaused = false;
@@ -406,5 +414,6 @@ export const useLayersStore = defineStore("layers", () => {
       pauseAutosaveState,
       updateUrlState,
       loadUrlState,
+      clear,
    };
 });
