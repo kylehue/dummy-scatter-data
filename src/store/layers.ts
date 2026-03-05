@@ -108,6 +108,7 @@ export const useLayersStore = defineStore("layers", () => {
 
    function duplicate(layerId?: string) {
       const layer = get(layerId);
+      pauseAutosaveState(); // pause before create
       const newLayer = create();
       newLayer.boundaryPoints = layer.boundaryPoints.map((point) => ({
          ...point,
@@ -311,6 +312,8 @@ export const useLayersStore = defineStore("layers", () => {
       for (const layer of layers.value.values()) {
          generateData(layer.id);
       }
+
+      updateUrlState();
    }
 
    // State management
@@ -338,18 +341,16 @@ export const useLayersStore = defineStore("layers", () => {
       currentStateIndex = stateStack.value.length - 1;
 
       updateUrlState();
-      console.log("save state");
    }
 
    function moveState(delta: number) {
       let newIndex = clamp(
          currentStateIndex + delta,
-         -1,
+         0,
          stateStack.value.length - 1,
       );
       if (newIndex === -1) {
          currentStateIndex = -1;
-         clear(); // reset to empty state
       } else if (newIndex !== currentStateIndex) {
          currentStateIndex = newIndex;
          const state = stateStack.value[currentStateIndex];
